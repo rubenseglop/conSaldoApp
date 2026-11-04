@@ -214,6 +214,40 @@ private fun BalanceCard(data: MifareCardReader.CardData, timestamp: Long) {
             Spacer(modifier = Modifier.height(16.dp))
             InfoRow(label = "Tipo", value = data.cardType.name)
             InfoRow(label = "UID", value = data.uid)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Bloque de contrato (diagnóstico)",
+                color = Color.White.copy(alpha = 0.6f),
+                fontSize = 12.sp,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = "Bloque 34 · Sector 8",
+                color = Color.White.copy(alpha = 0.7f),
+                fontSize = 11.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = data.contractBlockHex,
+                color = GreenLight,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Medium,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Bloque 36 · Copia de contrato",
+                color = Color.White.copy(alpha = 0.7f),
+                fontSize = 11.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = data.backupContractBlockHex,
+                color = GreenLight,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Medium,
+                textAlign = TextAlign.Center
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
             Text(

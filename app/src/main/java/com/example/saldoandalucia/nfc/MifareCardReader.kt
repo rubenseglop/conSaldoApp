@@ -22,6 +22,7 @@ class MifareCardReader(private val tag: Tag) {
         private const val SECTOR_CONTRACT = 8
         private const val SECTOR_BALANCE = 9
         private const val BLOCK_CONTRACT_INDEX_IN_SECTOR = 2   // bloque 34 (sector 8, bloque relativo 2)
+        private const val BLOCK_BACKUP_CONTRACT_INDEX_IN_SECTOR = 0 // bloque 36 (sector 9, bloque relativo 0)
         private const val BLOCK_BALANCE_INDEX_IN_SECTOR = 1    // bloque 37 (sector 9, bloque relativo 1)
 
         private val KEY_A_SECTOR_8 = hexStringToByteArray("51B3EF60BF56")
@@ -44,7 +45,9 @@ class MifareCardReader(private val tag: Tag) {
         val balanceEuros: Double,
         val rawBalanceUnits: Int,
         val cardType: CardType,
-        val uid: String
+        val uid: String,
+        val contractBlockHex: String,
+        val backupContractBlockHex: String
     )
 
     enum class CardType { NORMAL, JOVEN, DESCONOCIDA }
@@ -77,6 +80,13 @@ class MifareCardReader(private val tag: Tag) {
             if (!mifare.authenticateSectorWithKeyA(SECTOR_BALANCE, KEY_A_SECTOR_9)) {
                 return ReadResult.Error("No se pudo autenticar el sector 9 (saldo).")
             }
+            // --- Leer copia de seguridad del contrato (bloque 36) ---
+            // El bloque 36 y el bloque 37 pertenecen al sector 9; la misma
+            // autenticación permite leer ambos si los permisos lo autorizan.
+            val backupContractBlockIndex = mifare.sectorToBlock(SECTOR_BALANCE) + BLOCK_BACKUP_CONTRACT_INDEX_IN_SECTOR
+            val backupContractBlock = mifare.readBlock(backupContractBlockIndex)
+
+            // --- Leer saldo (sector 9, bloque 37) ---
             val balanceBlockIndex = mifare.sectorToBlock(SECTOR_BALANCE) + BLOCK_BALANCE_INDEX_IN_SECTOR
             val balanceBlock = mifare.readBlock(balanceBlockIndex)
             val rawUnits = parseValueBlock(balanceBlock)
@@ -89,7 +99,9 @@ class MifareCardReader(private val tag: Tag) {
                     balanceEuros = balanceEuros,
                     rawBalanceUnits = rawUnits,
                     cardType = cardType,
-                    uid = uid
+                    uid = uid,
+                    contractBlockHex = contractBlock.joinToString(" ") { "%02X".format(it) },
+                    backupContractBlockHex = backupContractBlock.joinToString(" ") { "%02X".format(it) }
                 )
             )
         } catch (e: Exception) {

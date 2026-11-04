@@ -24,8 +24,8 @@ android {
         applicationId = "com.example.saldoandalucia"
         minSdk = 26 // Android 8.0 Oreo, como pide el NFC Mifare Classic
         targetSdk = 34
-        versionCode = 4
-        versionName = "1.3"
+        versionCode = 6
+        versionName = "1.5"
     }
 
     buildTypes {
