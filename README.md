@@ -1,4 +1,4 @@
-# Saldo Andalucía (proyecto base)
+# conSaldo
 
 App Android (Kotlin + Jetpack Compose) para leer, por NFC, el saldo de las
 tarjetas de transporte del Consorcio de Transporte Metropolitano de Andalucía
@@ -47,3 +47,13 @@ que se publique el código.
 - Añadir una `Entity` + `Dao` de Room para guardar `SavedCard` con historial.
 - Lista/carrusel de tarjetas guardadas en vez de pantalla única.
 - Pantalla de ajustes para introducir la Key B manualmente por tarjeta.
+
+
+## conSaldo 1.2 – icono y pantalla de inicio
+
+- Se actualizan los iconos adaptativos y los PNG de respaldo para todas las densidades.
+- La pantalla de inicio de Android utiliza ahora `splash_logo.png`.
+- Se conserva `applicationId` (`com.example.saldoandalucia`) y el keystore del proyecto.
+- `versionCode` pasa a 3 y `versionName` a 1.2.
+
+Si el launcher sigue mostrando el icono antiguo después de instalar esta APK, elimina el acceso directo antiguo de la pantalla de inicio y vuelve a añadir la aplicación desde el cajón de aplicaciones. Algunos launchers mantienen el icono anterior en caché.

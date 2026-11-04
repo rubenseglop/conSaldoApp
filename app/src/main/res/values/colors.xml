@@ -1,0 +1,10 @@
+<resources>
+    <color name="ic_launcher_background">#2E7D32</color>
+
+    <!-- Paleta de la app -->
+    <color name="green_primary">#2E7D32</color>
+    <color name="green_dark">#1B5E20</color>
+    <color name="green_light">#81C784</color>
+    <color name="surface_dark">#121212</color>
+    <color name="surface_card">#1E1E1E</color>
+</resources>

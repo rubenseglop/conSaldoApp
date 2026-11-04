@@ -1,0 +1,34 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:   # te deja lanzarlo a mano desde la pestaña Actions
+
+jobs:
+  build:
+    runs-on: ubuntu-latest   # ya trae el Android SDK preinstalado
+
+    steps:
+      - name: Descargar el código del repo
+        uses: actions/checkout@v4
+
+      - name: Instalar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Preparar Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"   # AGP 8.5.2 + kapt no son compatibles con Gradle 9+
+
+      - name: Compilar APK (debug)
+        run: gradle assembleDebug
+
+      - name: Subir el APK como artifact descargable
+        uses: actions/upload-artifact@v4
+        with:
+          name: conSaldo-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
