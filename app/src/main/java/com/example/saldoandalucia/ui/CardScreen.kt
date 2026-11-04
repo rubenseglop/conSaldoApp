@@ -13,7 +13,6 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.QueryStats
-import androidx.compose.material.icons.filled.Scan
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Nfc
 import androidx.compose.material3.*
