@@ -9,8 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper
     val uid: String,
     val name: String,
     val balance: Double,
-    val lastRead: Long,
-    val threshold: Double
+    val lastRead: Long
 )
 
 data class ReadingRecord(
@@ -26,8 +25,7 @@ class LocalStore(context: Context) : SQLiteOpenHelper(context, "consaldo.db", nu
             uid TEXT PRIMARY KEY NOT NULL,
             name TEXT NOT NULL,
             balance REAL NOT NULL,
-            last_read INTEGER NOT NULL,
-            threshold REAL NOT NULL DEFAULT 5.0
+            last_read INTEGER NOT NULL
         )""".trimIndent())
         db.execSQL("""CREATE TABLE readings (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,20 +39,20 @@ class LocalStore(context: Context) : SQLiteOpenHelper(context, "consaldo.db", nu
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) { }
 
     fun card(uid: String): SavedCardRecord? = readableDatabase.rawQuery(
-        "SELECT uid,name,balance,last_read,threshold FROM cards WHERE uid=?", arrayOf(uid)
-    ).use { c -> if (c.moveToFirst()) SavedCardRecord(c.getString(0), c.getString(1), c.getDouble(2), c.getLong(3), c.getDouble(4)) else null }
+        "SELECT uid,name,balance,last_read FROM cards WHERE uid=?", arrayOf(uid)
+    ).use { c -> if (c.moveToFirst()) SavedCardRecord(c.getString(0), c.getString(1), c.getDouble(2), c.getLong(3)) else null }
 
     fun cards(): List<SavedCardRecord> = readableDatabase.rawQuery(
-        "SELECT uid,name,balance,last_read,threshold FROM cards ORDER BY last_read DESC", null
-    ).use { c -> buildList { while (c.moveToNext()) add(SavedCardRecord(c.getString(0), c.getString(1), c.getDouble(2), c.getLong(3), c.getDouble(4))) } }
+        "SELECT uid,name,balance,last_read FROM cards ORDER BY last_read DESC", null
+    ).use { c -> buildList { while (c.moveToNext()) add(SavedCardRecord(c.getString(0), c.getString(1), c.getDouble(2), c.getLong(3))) } }
 
-    fun saveNewCard(uid: String, name: String, balance: Double, timestamp: Long, threshold: Double = 5.0) {
+    fun saveNewCard(uid: String, name: String, balance: Double, timestamp: Long) {
         val db = writableDatabase
         db.beginTransaction()
         try {
             val values = ContentValues().apply {
                 put("uid", uid); put("name", name); put("balance", balance)
-                put("last_read", timestamp); put("threshold", threshold)
+                put("last_read", timestamp)
             }
             db.insertOrThrow("cards", null, values)
             insertReading(db, uid, balance, timestamp)
@@ -79,7 +77,6 @@ class LocalStore(context: Context) : SQLiteOpenHelper(context, "consaldo.db", nu
 
     fun renameCard(uid: String, name: String) { writableDatabase.execSQL("UPDATE cards SET name=? WHERE uid=?", arrayOf(name, uid)) }
     fun deleteCard(uid: String) { writableDatabase.beginTransaction(); try { writableDatabase.delete("readings", "uid=?", arrayOf(uid)); writableDatabase.delete("cards", "uid=?", arrayOf(uid)); writableDatabase.setTransactionSuccessful() } finally { writableDatabase.endTransaction() } }
-    fun setThreshold(uid: String, threshold: Double) { writableDatabase.execSQL("UPDATE cards SET threshold=? WHERE uid=?", arrayOf(threshold, uid)) }
 
     fun readings(uid: String? = null, limit: Int = 250): List<ReadingRecord> {
         val sql = if (uid == null) "SELECT id,uid,balance,timestamp FROM readings ORDER BY timestamp DESC LIMIT ?" else "SELECT id,uid,balance,timestamp FROM readings WHERE uid=? ORDER BY timestamp DESC LIMIT ?"

@@ -1,12 +1,8 @@
 package com.example.saldoandalucia
 
-import android.Manifest
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.nfc.NfcAdapter
@@ -18,7 +14,6 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -35,8 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.example.saldoandalucia.data.LocalStore
@@ -60,7 +53,6 @@ class MainActivity : ComponentActivity() {
     private var savedReadings by mutableStateOf<List<ReadingRecord>>(emptyList())
     private var selectedUid by mutableStateOf<String?>(null)
 
-    private val notificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -69,10 +61,6 @@ class MainActivity : ComponentActivity() {
         store = LocalStore(this)
         selectedUid = getPreferences(Context.MODE_PRIVATE).getString("selected_uid", null)
         refreshData()
-        createNotificationChannel()
-        if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }
 
         setContent {
             if (showBrandSplash) BrandSplashScreen() else CardScreen(
@@ -84,8 +72,7 @@ class MainActivity : ComponentActivity() {
                 onSelectCard = { selectCard(it) },
                 onSaveNewCard = { uid, name, balance, timestamp -> saveNewCard(uid, name, balance, timestamp) },
                 onRenameCard = { uid, name -> store.renameCard(uid, name); refreshData(); SaldoWidgetProvider.updateAll(this) },
-                onDeleteCard = { uid -> store.deleteCard(uid); if (selectedUid == uid) selectedUid = store.cards().firstOrNull()?.uid; persistSelected(); refreshData(); SaldoWidgetProvider.updateAll(this) },
-                onSetThreshold = { uid, threshold -> store.setThreshold(uid, threshold); refreshData(); store.card(uid)?.let { if (it.balance <= threshold) notifyLowBalance(it.name, it.balance, threshold) } }
+                onDeleteCard = { uid -> store.deleteCard(uid); if (selectedUid == uid) selectedUid = store.cards().firstOrNull()?.uid; persistSelected(); refreshData(); SaldoWidgetProvider.updateAll(this) }
             )
         }
 
@@ -114,8 +101,6 @@ class MainActivity : ComponentActivity() {
         persistSelected()
         refreshData()
         SaldoWidgetProvider.updateAll(this)
-        val card = store.card(uid)
-        if (card != null && balance < card.threshold) notifyLowBalance(name, balance, card.threshold)
     }
 
     private fun enableForegroundDispatch() {
@@ -145,7 +130,6 @@ class MainActivity : ComponentActivity() {
                 val existing = store.card(data.uid)
                 if (existing != null) {
                     store.recordReading(data.uid, data.balanceEuros, timestamp)
-                    if (existing.balance > existing.threshold && data.balanceEuros <= existing.threshold) notifyLowBalance(existing.name, data.balanceEuros, existing.threshold)
                     selectedUid = data.uid
                     refreshData()
                     SaldoWidgetProvider.updateAll(this@MainActivity)
@@ -153,24 +137,6 @@ class MainActivity : ComponentActivity() {
             }
             uiState = ScanState.Done(result, timestamp)
         }
-    }
-
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel("saldo_bajo", "Avisos de saldo bajo", NotificationManager.IMPORTANCE_DEFAULT).apply { description = "Avisos cuando una tarjeta se queda con poco saldo" }
-            getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
-        }
-    }
-
-    private fun notifyLowBalance(name: String, balance: Double, threshold: Double) {
-        if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return
-        val intent = PendingIntent.getActivity(this, 20, Intent(this, MainActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-        val notification = NotificationCompat.Builder(this, "saldo_bajo")
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("Saldo bajo: $name")
-            .setContentText(String.format(java.util.Locale("es", "ES"), "Te quedan %.2f € (aviso configurado en %.2f €).", balance, threshold))
-            .setContentIntent(intent).setAutoCancel(true).build()
-        getSystemService(NotificationManager::class.java).notify(name.hashCode(), notification)
     }
 
     private fun vibrarCorto() {
@@ -185,7 +151,7 @@ class MainActivity : ComponentActivity() {
         } catch (_: Exception) { }
     }
 
-    private fun sonarCorto() { try { val tone = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 70); tone.startTone(ToneGenerator.TONE_PROP_BEEP, 120) } catch (_: Exception) { } }
+    private fun sonarCorto() { try { val tone = ToneGenerator(AudioManager.STREAM_MUSIC, 70); tone.startTone(ToneGenerator.TONE_PROP_BEEP, 120) } catch (_: Exception) { } }
 }
 
 @androidx.compose.runtime.Composable

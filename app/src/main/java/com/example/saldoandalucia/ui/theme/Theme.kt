@@ -16,7 +16,7 @@ private val AppColorScheme = darkColorScheme(
     primary = GreenPrimary,
     onPrimary = Color.White,
     secondary = GreenLight,
-    background = SurfaceDark,
+    background = GreenDark,
     surface = SurfaceCard,
     error = ErrorRed
 )

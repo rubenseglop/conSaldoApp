@@ -26,3 +26,15 @@ El workflow de GitHub Actions compila `assembleDebug` y publica el APK como arte
 - El consumo es una estimación basada en diferencias entre consultas. Las subidas se registran como aumentos/posibles recargas, no como recargas confirmadas.
 - Las notificaciones requieren permiso en Android 13 o superior y se evalúan cuando se lee una tarjeta guardada.
 - El widget muestra el saldo de la tarjeta leída/seleccionada más recientemente; necesita abrir la app para actualizarse tras una lectura NFC.
+
+
+## Versión 1.7 – interfaz sencilla y accesible
+
+- Se elimina por completo el sistema de notificaciones y su permiso de Android.
+- Se retiran los controles de avisos de saldo y los iconos decorativos de configuración.
+- Se aumenta el tamaño de los textos, cifras, iconos y controles para facilitar la lectura y el uso.
+- La pantalla principal muestra el saldo de forma destacada e instrucciones directas para leer la tarjeta.
+- Se mantienen NFC, varias tarjetas, historial local, resumen y widget.
+- Se conserva el identificador de aplicación `com.example.saldoandalucia` y el archivo de firma debug del proyecto.
+
+La lectura NFC y la interfaz se han revisado estáticamente, pero esta versión todavía debe compilarse con GitHub Actions y probarse en un móvil real antes de considerarla validada.
