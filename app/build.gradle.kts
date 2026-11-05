@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.saldoandalucia"
+    namespace = "com.example.consaldo"
     compileSdk = 34
 
     signingConfigs {
@@ -21,7 +21,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.saldoandalucia"
+        applicationId = "com.example.consaldo"
         minSdk = 26 // Android 8.0 Oreo, como pide el NFC Mifare Classic
         targetSdk = 34
         versionCode = 8

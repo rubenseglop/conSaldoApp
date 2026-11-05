@@ -1,40 +1,66 @@
-# conSaldo 1.6
+# conSaldo 1.7
 
 Aplicación Android para consultar el saldo de tarjetas MIFARE Classic 1K del Consorcio de Transportes de Andalucía.
 
-## Novedades 1.6
-- Base de datos SQLite local para tarjetas e historial de consultas.
-- Las tarjetas nuevas no se guardan automáticamente: la aplicación pregunta y permite asignar un nombre.
-- Varias tarjetas, selección, renombrado y eliminación.
-- Historial de lecturas con fecha, hora y saldo.
-- Estadísticas de consumo estimado a partir de las bajadas observadas entre lecturas. No identifica viajes individuales.
-- Aviso configurable de saldo bajo, evaluado al leer la tarjeta.
-- Widget Android con el último saldo guardado (no realiza lecturas NFC por sí mismo).
-- UID y datos técnicos de los bloques no se muestran en la interfaz.
-- Copias de seguridad Android desactivadas para mantener los datos locales en el dispositivo.
+conSaldo está diseñada para ser sencilla y fácil de entender, también para personas mayores. La consulta se realiza acercando la tarjeta a la parte trasera del móvil compatible con NFC.
+
+## Características
+
+- Lectura NFC de tarjetas MIFARE Classic 1K compatibles.
+- Varias tarjetas guardadas en el propio móvil.
+- La aplicación pregunta antes de guardar una tarjeta nueva y permite asignarle un nombre.
+- Consulta del saldo y fecha de la última lectura.
+- Historial local de consultas por tarjeta.
+- Resumen de variaciones de saldo: las bajadas son estimaciones de consumo y las subidas son aumentos detectados; no identifica viajes ni confirma recargas.
+- Widget Android que muestra el último saldo guardado. El widget no lee tarjetas NFC por sí mismo.
+- Interfaz con textos, cifras y controles grandes, alto contraste e instrucciones directas.
+- Sin publicidad, cuentas de usuario, servicios en la nube ni notificaciones.
+- Los datos de las tarjetas y el historial se guardan localmente en el dispositivo.
+
+## Requisitos
+
+- Android 8.0 (API 26) o superior.
+- Un móvil con NFC.
+- Una tarjeta compatible con MIFARE Classic 1K.
+
+La compatibilidad depende del hardware NFC del teléfono y de la tarjeta utilizada.
+
+## Identificadores Android
+
+- Nombre de la aplicación: `conSaldo`
+- Namespace Kotlin/Android: `com.example.consaldo`
+- applicationId: `com.example.consaldo`
+- Versión: `1.7` (versionCode `8`)
+
+**Importante sobre las actualizaciones:** al cambiar el identificador de aplicación, Android considera conSaldo una aplicación distinta de la versión anterior. Android considera conSaldo una aplicación distinta. Para instalar esta versión puede ser necesario desinstalar la anterior; al hacerlo, se borrarán los datos locales de la aplicación antigua. Haz una copia de los datos que quieras conservar antes de desinstalarla.
 
 ## Compilación
-El workflow de GitHub Actions compila `assembleDebug` y publica el APK como artefacto.
 
-- applicationId: `com.example.saldoandalucia` (se mantiene para actualizar instalaciones anteriores)
-- versionName: `1.6`
-- versionCode: `7`
-- Firma debug fija incluida en `app/debug.keystore` para mantener compatibilidad con las APK anteriores de este proyecto.
+El proyecto utiliza Gradle y Android Gradle Plugin. En GitHub Actions, el workflow `.github/workflows/android-build.yml` ejecuta `gradle assembleDebug` y publica el APK como artefacto descargable.
 
-## Notas
-- El historial empieza a acumularse desde la primera lectura que se guarda en esta versión; no puede reconstruir movimientos anteriores.
-- El consumo es una estimación basada en diferencias entre consultas. Las subidas se registran como aumentos/posibles recargas, no como recargas confirmadas.
-- Las notificaciones requieren permiso en Android 13 o superior y se evalúan cuando se lee una tarjeta guardada.
-- El widget muestra el saldo de la tarjeta leída/seleccionada más recientemente; necesita abrir la app para actualizarse tras una lectura NFC.
+Para compilar localmente, con Android SDK y Gradle instalados:
 
+```bash
+gradle assembleDebug
+```
 
-## Versión 1.7 – interfaz sencilla y accesible
+El APK de depuración se genera en:
 
-- Se elimina por completo el sistema de notificaciones y su permiso de Android.
-- Se retiran los controles de avisos de saldo y los iconos decorativos de configuración.
-- Se aumenta el tamaño de los textos, cifras, iconos y controles para facilitar la lectura y el uso.
-- La pantalla principal muestra el saldo de forma destacada e instrucciones directas para leer la tarjeta.
-- Se mantienen NFC, varias tarjetas, historial local, resumen y widget.
-- Se conserva el identificador de aplicación `com.example.saldoandalucia` y el archivo de firma debug del proyecto.
+```text
+app/build/outputs/apk/debug/app-debug.apk
+```
 
-La lectura NFC y la interfaz se han revisado estáticamente, pero esta versión todavía debe compilarse con GitHub Actions y probarse en un móvil real antes de considerarla validada.
+## Datos y privacidad
+
+Las tarjetas guardadas y el historial se almacenan localmente en el móvil. La aplicación utiliza el identificador interno de la tarjeta para reconocerla, pero no lo muestra en la interfaz. No se envían estos datos a un servidor.
+
+## Limitaciones
+
+- El saldo solo se actualiza cuando se acerca y lee la tarjeta con NFC.
+- El móvil no puede conocer cambios de saldo mientras la tarjeta no se está leyendo.
+- El historial comienza cuando se guardan lecturas en la aplicación; no reconstruye movimientos anteriores.
+- Las estadísticas son estimaciones basadas en diferencias entre lecturas.
+
+## Publicación de versiones
+
+Las versiones se identifican mediante etiquetas Git, por ejemplo `v1.7`. El workflow actual compila al recibir cambios en la rama `main` o al ejecutarse manualmente desde GitHub Actions.

@@ -1,0 +1,5 @@
+git add .
+git commit -m "conSaldo 1.7 - Diseño sencillo y accesible"
+git tag -a v1.7 -m "Versión 1.7"
+git push origin main
+git push origin v1.7

@@ -1,5 +1,5 @@
 <resources>
-    <style name="Theme.SaldoAndalucia" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.ConSaldo" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowActionModeOverlay">true</item>
         <item name="android:windowBackground">#176B36</item>
     </style>
@@ -9,6 +9,6 @@
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">#176B36</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/splash_empty</item>
-        <item name="postSplashScreenTheme">@style/Theme.SaldoAndalucia</item>
+        <item name="postSplashScreenTheme">@style/Theme.ConSaldo</item>
     </style>
 </resources>
