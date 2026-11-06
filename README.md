@@ -1,4 +1,4 @@
-# conSaldo 1.7
+# conSaldo 1.8
 
 Aplicación Android para consultar el saldo de tarjetas MIFARE Classic 1K del Consorcio de Transportes de Andalucía.
 
@@ -14,6 +14,7 @@ conSaldo está diseñada para ser sencilla y fácil de entender, también para p
 - Resumen de variaciones de saldo: las bajadas son estimaciones de consumo y las subidas son aumentos detectados; no identifica viajes ni confirma recargas.
 - Widget Android que muestra el último saldo guardado. El widget no lee tarjetas NFC por sí mismo.
 - Interfaz con textos, cifras y controles grandes, alto contraste e instrucciones directas.
+- Tarjetas con una nueva presentación visual inspirada en las tarjetas de transporte de Andalucía.
 - Sin publicidad, cuentas de usuario, servicios en la nube ni notificaciones.
 - Los datos de las tarjetas y el historial se guardan localmente en el dispositivo.
 
@@ -30,7 +31,7 @@ La compatibilidad depende del hardware NFC del teléfono y de la tarjeta utiliza
 - Nombre de la aplicación: `conSaldo`
 - Namespace Kotlin/Android: `com.example.consaldo`
 - applicationId: `com.example.consaldo`
-- Versión: `1.7` (versionCode `8`)
+- Versión: `1.8` (versionCode `9`)
 
 **Importante sobre las actualizaciones:** al cambiar el identificador de aplicación, Android considera conSaldo una aplicación distinta de la versión anterior. Android considera conSaldo una aplicación distinta. Para instalar esta versión puede ser necesario desinstalar la anterior; al hacerlo, se borrarán los datos locales de la aplicación antigua. Haz una copia de los datos que quieras conservar antes de desinstalarla.
 
@@ -63,4 +64,4 @@ Las tarjetas guardadas y el historial se almacenan localmente en el móvil. La a
 
 ## Publicación de versiones
 
-Las versiones se identifican mediante etiquetas Git, por ejemplo `v1.7`. El workflow actual compila al recibir cambios en la rama `main` o al ejecutarse manualmente desde GitHub Actions.
+Las versiones se identifican mediante etiquetas Git, por ejemplo `v1.8`. El workflow actual compila al recibir cambios en la rama `main` o al ejecutarse manualmente desde GitHub Actions.
