@@ -576,16 +576,26 @@ private fun HistoryPage(
     cards: List<SavedCardRecord>,
     onDeleteReading: (Long) -> Unit
 ) {
-    if (readings.isEmpty()) {
-        EmptyMessage("Todavía no hay consultas guardadas.")
-    } else {
-        LazyColumn(
-            contentPadding = PaddingValues(bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(11.dp)
-        ) {
+    LazyColumn(
+        contentPadding = PaddingValues(bottom = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(11.dp)
+    ) {
+        item {
+            PageHeading("Tus consultas", "${readings.size} registros guardados")
+        }
+        item {
+            Text(
+                "Desliza una consulta a la izquierda para eliminarla.",
+                color = Color(0xFFB7C7BA),
+                fontSize = 14.sp,
+                modifier = Modifier.padding(vertical = 2.dp)
+            )
+        }
+        if (readings.isEmpty()) {
             item {
-                PageHeading("Tus consultas", "${readings.size} registros guardados")
+                EmptyMessage("Todavía no hay consultas guardadas.")
             }
+        } else {
             items(readings, key = { it.id }) { reading ->
                 val name = cards.firstOrNull { it.uid == reading.uid }?.name ?: "Tarjeta"
                 DismissibleReadingItem(
