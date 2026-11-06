@@ -92,7 +92,11 @@ class MainActivity : ComponentActivity() {
         persistSelected()
     }
 
-    private fun selectCard(uid: String) { selectedUid = uid; persistSelected() }
+    private fun selectCard(uid: String) {
+        selectedUid = uid
+        uiState = ScanState.Idle
+        persistSelected()
+    }
     private fun persistSelected() { getPreferences(Context.MODE_PRIVATE).edit().putString("selected_uid", selectedUid).apply() }
 
     private fun saveNewCard(uid: String, name: String, balance: Double, timestamp: Long) {
