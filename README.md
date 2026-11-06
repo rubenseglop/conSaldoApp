@@ -12,6 +12,7 @@ conSaldo está diseñada para ser sencilla y fácil de entender, también para p
 - Consulta del saldo y fecha de la última lectura.
 - Historial local de consultas por tarjeta.
 - Eliminación individual de consultas del historial deslizando cada registro hacia la izquierda.
+- Eliminación de una tarjeta deslizando hacia la izquierda y confirmando antes de borrar también su historial.
 - Resumen de variaciones de saldo: las bajadas son estimaciones de consumo y las subidas son aumentos detectados; no identifica viajes ni confirma recargas.
 - Widget Android que muestra el último saldo guardado. El widget no lee tarjetas NFC por sí mismo.
 - Interfaz con textos, cifras y controles grandes, alto contraste e instrucciones directas.

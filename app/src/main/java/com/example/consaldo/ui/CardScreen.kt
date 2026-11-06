@@ -36,6 +36,7 @@ import com.example.consaldo.data.ReadingRecord
 import com.example.consaldo.data.SavedCardRecord
 import com.example.consaldo.nfc.MifareCardReader
 import com.example.consaldo.ui.theme.*
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -743,52 +744,141 @@ private fun CardsPage(
             verticalArrangement = Arrangement.spacedBy(13.dp)
         ) {
             item {
-                PageHeading("Tus tarjetas", "Acerca una tarjeta nueva para añadirla")
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    PageHeading("Tus tarjetas", "Acerca una tarjeta para añadirla")
+                    Text(
+                        "Desliza una tarjeta a la izquierda para eliminarla.",
+                        color = Color(0xFFB7C7BA),
+                        fontSize = 14.sp
+                    )
+                }
             }
             items(cards, key = { it.uid }) { card ->
-                Surface(
-                    color = Color(0xFF14231A),
-                    shape = RoundedCornerShape(24.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .then(
-                            if (card.uid == selectedUid) {
-                                Modifier.border(1.dp, GreenLight.copy(alpha = 0.55f), RoundedCornerShape(24.dp))
-                            } else {
-                                Modifier
-                            }
-                        )
+                DismissibleSavedCardItem(
+                    card = card,
+                    isSelected = card.uid == selectedUid,
+                    onSelect = { onSelect(card.uid) },
+                    onEdit = { onEdit(card) },
+                    onDelete = { onDelete(card.uid) }
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DismissibleSavedCardItem(
+    card: SavedCardRecord,
+    isSelected: Boolean,
+    onSelect: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { value -> value != SwipeToDismissBoxValue.StartToEnd }
+    )
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(dismissState.currentValue) {
+        if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
+            showDeleteConfirmation = true
+        }
+    }
+
+    fun cancelDelete() {
+        showDeleteConfirmation = false
+        coroutineScope.launch { dismissState.reset() }
+    }
+
+    SwipeToDismissBox(
+        state = dismissState,
+        enableDismissFromStartToEnd = false,
+        backgroundContent = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(ErrorRed, RoundedCornerShape(24.dp))
+                    .padding(horizontal = 20.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Column(modifier = Modifier.padding(12.dp)) {
-                        TransportCard(
-                            name = card.name,
-                            balance = money(card.balance),
-                            lastRead = "Última consulta · ${dateTime(card.lastRead)}",
-                            compact = true,
-                            modifier = Modifier.clickable { onSelect(card.uid) }
-                        )
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                if (card.uid == selectedUid) "ACTIVA" else "Toca la tarjeta para activar",
-                                color = if (card.uid == selectedUid) GreenLight else Color(0xFF9BA99E),
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.weight(1f)
+                    Icon(Icons.Default.Delete, contentDescription = null, tint = Color.White)
+                    Text("Eliminar", color = Color.White, fontWeight = FontWeight.Bold)
+                }
+            }
+        },
+        content = {
+            Surface(
+                color = Color(0xFF14231A),
+                shape = RoundedCornerShape(24.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .then(
+                        if (isSelected) {
+                            Modifier.border(
+                                1.dp,
+                                GreenLight.copy(alpha = 0.55f),
+                                RoundedCornerShape(24.dp)
                             )
-                            TextButton(onClick = { onEdit(card) }) { Text("Renombrar") }
-                            TextButton(onClick = { onDelete(card.uid) }) {
-                                Text("Eliminar", color = ErrorRed)
-                            }
+                        } else {
+                            Modifier
                         }
+                    )
+            ) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    TransportCard(
+                        name = card.name,
+                        balance = money(card.balance),
+                        lastRead = "Última consulta · ${dateTime(card.lastRead)}",
+                        compact = true,
+                        modifier = Modifier.clickable(onClick = onSelect)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            if (isSelected) "ACTIVA" else "Toca la tarjeta para activar",
+                            color = if (isSelected) GreenLight else Color(0xFF9BA99E),
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.weight(1f)
+                        )
+                        TextButton(onClick = onEdit) { Text("Renombrar") }
                     }
                 }
             }
         }
+    )
+
+    if (showDeleteConfirmation) {
+        AlertDialog(
+            onDismissRequest = { cancelDelete() },
+            title = { Text("¿Eliminar tarjeta?", fontWeight = FontWeight.Bold) },
+            text = {
+                Text("Se eliminarán la tarjeta ${card.name} y todas sus consultas. Esta acción no se puede deshacer.")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteConfirmation = false
+                        onDelete()
+                    }
+                ) {
+                    Text("Eliminar", color = ErrorRed)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { cancelDelete() }) { Text("Cancelar") }
+            }
+        )
     }
 }
 
