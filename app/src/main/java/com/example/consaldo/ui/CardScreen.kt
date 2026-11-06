@@ -13,11 +13,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Nfc
 import androidx.compose.material.icons.filled.QueryStats
 import androidx.compose.material3.*
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,6 +57,7 @@ fun CardScreen(
     selectedUid: String?,
     onSelectCard: (String) -> Unit,
     onSaveNewCard: (String, String, Double, Long) -> Unit,
+    onDeleteReading: (Long) -> Unit,
     onRenameCard: (String, String) -> Unit,
     onDeleteCard: (String) -> Unit
 ) {
@@ -136,7 +139,7 @@ fun CardScreen(
                 ) {
                     when (page) {
                         Page.HOME -> HomePage(state, nfcAvailable, cards, selectedUid, onSelectCard)
-                        Page.HISTORY -> HistoryPage(readings, cards)
+                        Page.HISTORY -> HistoryPage(readings, cards, onDeleteReading)
                         Page.STATS -> StatsPage(cards, readings, selectedUid)
                         Page.CARDS -> CardsPage(
                             cards = cards,
@@ -568,7 +571,11 @@ private fun NfcStatusCard(state: ScanState, nfcAvailable: Boolean) {
 }
 
 @Composable
-private fun HistoryPage(readings: List<ReadingRecord>, cards: List<SavedCardRecord>) {
+private fun HistoryPage(
+    readings: List<ReadingRecord>,
+    cards: List<SavedCardRecord>,
+    onDeleteReading: (Long) -> Unit
+) {
     if (readings.isEmpty()) {
         EmptyMessage("Todavía no hay consultas guardadas.")
     } else {
@@ -581,43 +588,87 @@ private fun HistoryPage(readings: List<ReadingRecord>, cards: List<SavedCardReco
             }
             items(readings, key = { it.id }) { reading ->
                 val name = cards.firstOrNull { it.uid == reading.uid }?.name ?: "Tarjeta"
-                Surface(
-                    color = Color(0xFF14231A),
-                    shape = RoundedCornerShape(18.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 15.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(42.dp)
-                                .background(Color(0xFF244B32), RoundedCornerShape(14.dp)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(Icons.Default.History, null, tint = GreenLight)
-                        }
-                        Spacer(Modifier.width(13.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(name, color = Color.White, fontWeight = FontWeight.SemiBold)
-                            Text(
-                                dateTime(reading.timestamp),
-                                color = Color(0xFF9BA99E),
-                                fontSize = 12.sp
-                            )
-                        }
-                        Text(
-                            money(reading.balance),
-                            color = GreenLight,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
-                        )
-                    }
-                }
+                DismissibleReadingItem(
+                    reading = reading,
+                    cardName = name,
+                    onDelete = { onDeleteReading(reading.id) }
+                )
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DismissibleReadingItem(
+    reading: ReadingRecord,
+    cardName: String,
+    onDelete: () -> Unit
+) {
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { value -> value != SwipeToDismissBoxValue.StartToEnd }
+    )
+    LaunchedEffect(dismissState.currentValue) {
+        if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) onDelete()
+    }
+
+    SwipeToDismissBox(
+        state = dismissState,
+        enableDismissFromStartToEnd = false,
+        backgroundContent = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(ErrorRed, RoundedCornerShape(18.dp))
+                    .padding(horizontal = 20.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(Icons.Default.Delete, contentDescription = null, tint = Color.White)
+                    Text("Eliminar", color = Color.White, fontWeight = FontWeight.Bold)
+                }
+            }
+        },
+        content = {
+            Surface(
+                color = Color(0xFF14231A),
+                shape = RoundedCornerShape(18.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 15.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(42.dp)
+                            .background(Color(0xFF244B32), RoundedCornerShape(14.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Default.History, null, tint = GreenLight)
+                    }
+                    Spacer(Modifier.width(13.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(cardName, color = Color.White, fontWeight = FontWeight.SemiBold)
+                        Text(
+                            dateTime(reading.timestamp),
+                            color = Color(0xFF9BA99E),
+                            fontSize = 12.sp
+                        )
+                    }
+                    Text(
+                        money(reading.balance),
+                        color = GreenLight,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                }
+            }
+        }
+    )
 }
 
 @Composable

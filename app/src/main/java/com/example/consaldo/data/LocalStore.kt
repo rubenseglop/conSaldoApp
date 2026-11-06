@@ -77,6 +77,7 @@ class LocalStore(context: Context) : SQLiteOpenHelper(context, "consaldo.db", nu
 
     fun renameCard(uid: String, name: String) { writableDatabase.execSQL("UPDATE cards SET name=? WHERE uid=?", arrayOf(name, uid)) }
     fun deleteCard(uid: String) { writableDatabase.beginTransaction(); try { writableDatabase.delete("readings", "uid=?", arrayOf(uid)); writableDatabase.delete("cards", "uid=?", arrayOf(uid)); writableDatabase.setTransactionSuccessful() } finally { writableDatabase.endTransaction() } }
+    fun deleteReading(id: Long) { writableDatabase.delete("readings", "id=?", arrayOf(id.toString())) }
 
     fun readings(uid: String? = null, limit: Int = 250): List<ReadingRecord> {
         val sql = if (uid == null) "SELECT id,uid,balance,timestamp FROM readings ORDER BY timestamp DESC LIMIT ?" else "SELECT id,uid,balance,timestamp FROM readings WHERE uid=? ORDER BY timestamp DESC LIMIT ?"

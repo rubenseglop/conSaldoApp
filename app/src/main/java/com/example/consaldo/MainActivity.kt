@@ -71,6 +71,7 @@ class MainActivity : ComponentActivity() {
                 selectedUid = selectedUid,
                 onSelectCard = { selectCard(it) },
                 onSaveNewCard = { uid, name, balance, timestamp -> saveNewCard(uid, name, balance, timestamp) },
+                onDeleteReading = { id -> store.deleteReading(id); refreshData() },
                 onRenameCard = { uid, name -> store.renameCard(uid, name); refreshData(); SaldoWidgetProvider.updateAll(this) },
                 onDeleteCard = { uid -> store.deleteCard(uid); if (selectedUid == uid) selectedUid = store.cards().firstOrNull()?.uid; persistSelected(); refreshData(); SaldoWidgetProvider.updateAll(this) }
             )
