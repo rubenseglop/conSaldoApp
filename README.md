@@ -1,4 +1,4 @@
-# conSaldo 1.8.1
+# conSaldo 1.8.2
 
 Aplicación Android para consultar el saldo de tarjetas MIFARE Classic 1K del Consorcio de Transportes de Andalucía.
 
@@ -32,7 +32,7 @@ La compatibilidad depende del hardware NFC del teléfono y de la tarjeta utiliza
 - Nombre de la aplicación: `conSaldo`
 - Namespace Kotlin/Android: `com.example.consaldo`
 - applicationId: `com.example.consaldo`
-- Versión: `1.8.1` (versionCode `10`)
+- Versión: `1.8.2` (versionCode `11`)
 
 **Importante sobre las actualizaciones:** al cambiar el identificador de aplicación, Android considera conSaldo una aplicación distinta de la versión anterior. Android considera conSaldo una aplicación distinta. Para instalar esta versión puede ser necesario desinstalar la anterior; al hacerlo, se borrarán los datos locales de la aplicación antigua. Haz una copia de los datos que quieras conservar antes de desinstalarla.
 
@@ -65,4 +65,4 @@ Las tarjetas guardadas y el historial se almacenan localmente en el móvil. La a
 
 ## Publicación de versiones
 
-Las versiones se identifican mediante etiquetas Git, por ejemplo `v1.8.1`. El workflow actual compila al recibir cambios en la rama `main` o al ejecutarse manualmente desde GitHub Actions.
+Las versiones se identifican mediante etiquetas Git, por ejemplo `v1.8.2`. El workflow actual compila al recibir cambios en la rama `main` o al ejecutarse manualmente desde GitHub Actions.
