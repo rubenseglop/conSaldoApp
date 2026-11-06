@@ -619,8 +619,13 @@ private fun DismissibleReadingItem(
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = { value -> value != SwipeToDismissBoxValue.StartToEnd }
     )
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+
     LaunchedEffect(dismissState.currentValue) {
-        if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) onDelete()
+        if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
+            showDeleteConfirmation = true
+        }
     }
 
     SwipeToDismissBox(
@@ -680,6 +685,42 @@ private fun DismissibleReadingItem(
             }
         }
     )
+
+    if (showDeleteConfirmation) {
+        AlertDialog(
+            onDismissRequest = {
+                showDeleteConfirmation = false
+                coroutineScope.launch { dismissState.reset() }
+            },
+            title = { Text("¿Eliminar esta consulta?", fontWeight = FontWeight.Bold) },
+            text = {
+                Text("Se eliminará este escaneo del historial. La tarjeta no se eliminará.")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            dismissState.reset()
+                            showDeleteConfirmation = false
+                            onDelete()
+                        }
+                    }
+                ) {
+                    Text("Eliminar consulta", color = ErrorRed)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteConfirmation = false
+                        coroutineScope.launch { dismissState.reset() }
+                    }
+                ) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
 }
 
 @Composable
