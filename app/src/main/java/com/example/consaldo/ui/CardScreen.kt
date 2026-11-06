@@ -868,8 +868,11 @@ private fun DismissibleSavedCardItem(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        showDeleteConfirmation = false
-                        onDelete()
+                        coroutineScope.launch {
+                            dismissState.reset()
+                            showDeleteConfirmation = false
+                            onDelete()
+                        }
                     }
                 ) {
                     Text("Eliminar", color = ErrorRed)
