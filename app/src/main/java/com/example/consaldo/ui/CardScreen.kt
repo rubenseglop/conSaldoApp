@@ -249,14 +249,25 @@ private fun AppHeader(page: Page, modifier: Modifier = Modifier) {
             Icon(Icons.Default.CreditCard, null, tint = GreenLight)
         }
         Spacer(Modifier.width(13.dp))
-        Column(modifier = Modifier.weight(1f)) {
+        Column(
+            modifier = Modifier.weight(1f),
+            horizontalAlignment = Alignment.Start
+        ) {
             Image(
                 painter = painterResource(R.drawable.consaldo_wordmark),
                 contentDescription = "conSaldo",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(36.dp)
+                    .width(135.dp)
+                    .height(24.dp)
+            )
+            Image(
+                painter = painterResource(R.drawable.consaldo_wordmark_underline),
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier
+                    .width(110.dp)
+                    .height(8.dp)
             )
             Text(title, color = Color(0xFFB7C7BA), fontSize = 14.sp)
         }
