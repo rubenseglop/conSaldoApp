@@ -36,7 +36,7 @@ La compatibilidad depende del hardware NFC del teléfono y de la tarjeta utiliza
 - applicationId: `com.example.consaldo`
 - Versión: `1.8.3` (versionCode `12`)
 
-**Importante sobre las actualizaciones:** al cambiar el identificador de aplicación, Android considera conSaldo una aplicación distinta de la versión anterior. Android considera conSaldo una aplicación distinta. Para instalar esta versión puede ser necesario desinstalar la anterior; al hacerlo, se borrarán los datos locales de la aplicación antigua. Haz una copia de los datos que quieras conservar antes de desinstalarla.
+**Compatibilidad de instalación:** Android solo permite actualizar una instalación existente si coinciden el `applicationId` y el certificado de firma. Este proyecto mantiene `com.example.consaldo` y utiliza el `app/debug.keystore` versionado para firmar las compilaciones de GitHub Actions. Si una versión instalada anteriormente se firmó con otra clave o utilizó otro identificador, Android no permitirá instalarla encima; no desinstales la aplicación sin antes exportar o respaldar los datos que quieras conservar.
 
 ## Compilación
 
