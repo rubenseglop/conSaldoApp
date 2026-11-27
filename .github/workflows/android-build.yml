@@ -1,13 +1,17 @@
-name: Build APK
+name: Build and publish APK
 
 on:
   push:
     branches: [ "main" ]
-  workflow_dispatch:   # te deja lanzarlo a mano desde la pestaña Actions
+    tags: [ "v*" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
-    runs-on: ubuntu-latest   # ya trae el Android SDK preinstalado
+    runs-on: ubuntu-latest
 
     steps:
       - name: Descargar el código del repo
@@ -22,13 +26,26 @@ jobs:
       - name: Preparar Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: "8.9"   # AGP 8.5.2 + kapt no son compatibles con Gradle 9+
+          gradle-version: "8.9"
 
-      - name: Compilar APK (debug)
+      - name: Compilar APK (debug firmada con el keystore fijo)
         run: gradle assembleDebug
 
-      - name: Subir el APK como artifact descargable
+      - name: Preparar APK para publicación
+        run: cp app/build/outputs/apk/debug/app-debug.apk "conSaldo-${GITHUB_REF_NAME}.apk"
+
+      - name: Subir APK como artefacto
         uses: actions/upload-artifact@v4
         with:
-          name: conSaldo-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          name: conSaldo-${{ github.ref_name }}
+          path: conSaldo-${{ github.ref_name }}.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Crear GitHub Release y adjuntar APK
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "conSaldo ${{ github.ref_name }}"
+          generate_release_notes: true
+          files: conSaldo-${{ github.ref_name }}.apk

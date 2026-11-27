@@ -1,4 +1,4 @@
-# conSaldo 1.8.2
+# conSaldo 1.8.3
 
 Aplicación Android para consultar el saldo de tarjetas MIFARE Classic 1K del Consorcio de Transportes de Andalucía.
 
@@ -18,7 +18,8 @@ conSaldo está diseñada para ser sencilla y fácil de entender, también para p
 - Interfaz con textos, cifras y controles grandes, alto contraste e instrucciones directas.
 - Tarjetas con una nueva presentación visual inspirada en las tarjetas de transporte de Andalucía.
 - Logotipo gráfico de conSaldo en la cabecera de todas las pestañas.
-- Sin publicidad, cuentas de usuario, servicios en la nube ni notificaciones.
+- Comprobación automática de nuevas versiones publicadas en GitHub Releases.
+- Sin publicidad, cuentas de usuario ni servicios en la nube; la comprobación de versiones consulta únicamente la publicación pública de GitHub.
 - Los datos de las tarjetas y el historial se guardan localmente en el dispositivo.
 
 ## Requisitos
@@ -29,14 +30,20 @@ conSaldo está diseñada para ser sencilla y fácil de entender, también para p
 
 La compatibilidad depende del hardware NFC del teléfono y de la tarjeta utilizada.
 
+## Actualizaciones
+
+Al abrir la aplicación se comprueba si existe una versión más reciente en [GitHub Releases](https://github.com/rubenseglop/conSaldoApp/releases). Si la hay, se muestra un aviso y se puede descargar el APK. Cuando Android indique que la descarga ha terminado, pulsa su notificación para abrir el instalador y confirma la instalación. Android puede pedir permiso para instalar aplicaciones descargadas.
+
+Las versiones nuevas se publican creando una etiqueta Git con formato `vX.Y.Z`; GitHub Actions compila el APK y lo adjunta automáticamente a la Release. Cada versión debe incrementar `versionCode` y actualizar `versionName` en `app/build.gradle.kts`.
+
 ## Identificadores Android
 
 - Nombre de la aplicación: `conSaldo`
 - Namespace Kotlin/Android: `com.example.consaldo`
 - applicationId: `com.example.consaldo`
-- Versión: `1.8.2` (versionCode `11`)
+- Versión: `1.8.3` (versionCode `12`)
 
-**Importante sobre las actualizaciones:** al cambiar el identificador de aplicación, Android considera conSaldo una aplicación distinta de la versión anterior. Android considera conSaldo una aplicación distinta. Para instalar esta versión puede ser necesario desinstalar la anterior; al hacerlo, se borrarán los datos locales de la aplicación antigua. Haz una copia de los datos que quieras conservar antes de desinstalarla.
+**Compatibilidad de instalación:** Android solo permite actualizar una instalación existente si coinciden el `applicationId` y el certificado de firma. Este proyecto mantiene `com.example.consaldo` y utiliza el `app/debug.keystore` versionado para firmar las compilaciones de GitHub Actions. Si una versión instalada anteriormente se firmó con otra clave o utilizó otro identificador, Android no permitirá instalarla encima; no desinstales la aplicación sin antes exportar o respaldar los datos que quieras conservar.
 
 ## Compilación
 
@@ -67,4 +74,4 @@ Las tarjetas guardadas y el historial se almacenan localmente en el móvil. La a
 
 ## Publicación de versiones
 
-Las versiones se identifican mediante etiquetas Git, por ejemplo `v1.8.2`. El workflow actual compila al recibir cambios en la rama `main` o al ejecutarse manualmente desde GitHub Actions.
+Las versiones se identifican mediante etiquetas Git, por ejemplo `v1.8.3`. Al subir una etiqueta `v*`, el workflow compila el APK y crea o actualiza la GitHub Release adjuntándolo. Los cambios en `main` siguen generando un artefacto de prueba.

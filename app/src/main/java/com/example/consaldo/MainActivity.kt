@@ -17,6 +17,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -52,6 +55,7 @@ class MainActivity : ComponentActivity() {
     private var savedCards by mutableStateOf<List<SavedCardRecord>>(emptyList())
     private var savedReadings by mutableStateOf<List<ReadingRecord>>(emptyList())
     private var selectedUid by mutableStateOf<String?>(null)
+    private var updateInfo by mutableStateOf<AppUpdate?>(null)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,9 +79,38 @@ class MainActivity : ComponentActivity() {
                 onRenameCard = { uid, name -> store.renameCard(uid, name); refreshData(); SaldoWidgetProvider.updateAll(this) },
                 onDeleteCard = { uid -> store.deleteCard(uid); if (selectedUid == uid) selectedUid = store.cards().firstOrNull()?.uid; persistSelected(); refreshData(); SaldoWidgetProvider.updateAll(this) }
             )
+
+            updateInfo?.let { update ->
+                AlertDialog(
+                    onDismissRequest = { updateInfo = null },
+                    title = { Text("Nueva versión disponible") },
+                    text = {
+                        androidx.compose.foundation.layout.Column {
+                            Text("conSaldo ${update.versionName} ya está disponible.")
+                            if (update.releaseNotes.isNotBlank()) {
+                                Text("\nNovedades:\n${update.releaseNotes}")
+                            }
+                            Text("\nAl descargarla, pulsa la notificación de Android para instalarla.")
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            AppUpdateManager.downloadUpdate(this@MainActivity, update)
+                            updateInfo = null
+                        }) { Text("Descargar APK") }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { updateInfo = null }) { Text("Más tarde") }
+                    }
+                )
+            }
         }
 
-        lifecycleScope.launch { delay(1800); showBrandSplash = false }
+        lifecycleScope.launch {
+            delay(1800)
+            showBrandSplash = false
+            updateInfo = AppUpdateManager.checkForUpdate(this@MainActivity)
+        }
         handleIntent(intent)
     }
 
