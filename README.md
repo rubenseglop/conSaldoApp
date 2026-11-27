@@ -18,7 +18,8 @@ conSaldo está diseñada para ser sencilla y fácil de entender, también para p
 - Interfaz con textos, cifras y controles grandes, alto contraste e instrucciones directas.
 - Tarjetas con una nueva presentación visual inspirada en las tarjetas de transporte de Andalucía.
 - Logotipo gráfico de conSaldo en la cabecera de todas las pestañas.
-- Comprobación automática de nuevas versiones publicadas en GitHub Releases.\n- Sin publicidad, cuentas de usuario ni servicios en la nube; la comprobación de versiones consulta únicamente la publicación pública de GitHub.
+- Comprobación automática de nuevas versiones publicadas en GitHub Releases.
+- Sin publicidad, cuentas de usuario ni servicios en la nube; la comprobación de versiones consulta únicamente la publicación pública de GitHub.
 - Los datos de las tarjetas y el historial se guardan localmente en el dispositivo.
 
 ## Requisitos
@@ -29,7 +30,13 @@ conSaldo está diseñada para ser sencilla y fácil de entender, también para p
 
 La compatibilidad depende del hardware NFC del teléfono y de la tarjeta utilizada.
 
-## Actualizaciones\n\nAl abrir la aplicación se comprueba si existe una versión más reciente en [GitHub Releases](https://github.com/rubenseglop/conSaldoApp/releases). Si la hay, se muestra un aviso y se puede descargar el APK. Cuando Android indique que la descarga ha terminado, pulsa su notificación para abrir el instalador y confirma la instalación. Android puede pedir permiso para instalar aplicaciones descargadas.\n\nLas versiones nuevas se publican creando una etiqueta Git con formato `vX.Y.Z`; GitHub Actions compila el APK y lo adjunta automáticamente a la Release. Cada versión debe incrementar `versionCode` y actualizar `versionName` en `app/build.gradle.kts`.\n\n## Identificadores Android
+## Actualizaciones
+
+Al abrir la aplicación se comprueba si existe una versión más reciente en [GitHub Releases](https://github.com/rubenseglop/conSaldoApp/releases). Si la hay, se muestra un aviso y se puede descargar el APK. Cuando Android indique que la descarga ha terminado, pulsa su notificación para abrir el instalador y confirma la instalación. Android puede pedir permiso para instalar aplicaciones descargadas.
+
+Las versiones nuevas se publican creando una etiqueta Git con formato `vX.Y.Z`; GitHub Actions compila el APK y lo adjunta automáticamente a la Release. Cada versión debe incrementar `versionCode` y actualizar `versionName` en `app/build.gradle.kts`.
+
+## Identificadores Android
 
 - Nombre de la aplicación: `conSaldo`
 - Namespace Kotlin/Android: `com.example.consaldo`
